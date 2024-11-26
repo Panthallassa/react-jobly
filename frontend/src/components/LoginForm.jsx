@@ -32,6 +32,7 @@ function LoginForm({ login }) {
 				onChange={handleChange}
 				placeholder='Password'
 				required
+				autoComplete='current-password'
 			/>
 			<button type='submit'>Login</button>
 		</form>

@@ -11,6 +11,7 @@ function useLocalStorage(key, initialValue = null) {
 	const [storedValue, setStoredValue] = useState(() => {
 		try {
 			const item = localStorage.getItem(key);
+
 			return item ? JSON.parse(item) : initialValue;
 		} catch (err) {
 			console.error("Error reading from localStorage", err);

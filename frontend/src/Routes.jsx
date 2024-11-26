@@ -43,6 +43,7 @@ function AppRoutes({
 	currentUser,
 	handleSignup,
 	updateUser,
+	handleJobApplication,
 }) {
 	return (
 		<Routes>
@@ -67,7 +68,10 @@ function AppRoutes({
 				path='/companies/:handle'
 				element={
 					<PrivateRoute currentUser={currentUser}>
-						<CompanyDetail />
+						<CompanyDetail
+							currentUser={currentUser}
+							handleJobApplication={handleJobApplication}
+						/>
 					</PrivateRoute>
 				}
 			/>
@@ -77,7 +81,13 @@ function AppRoutes({
 				path='/jobs'
 				element={
 					<PrivateRoute currentUser={currentUser}>
-						<JobsList />
+						<JobsList
+							currentUser={currentUser?.username}
+							handleJobApplication={handleJobApplication}
+							appliedJobIds={
+								currentUser?.applications || []
+							}
+						/>
 					</PrivateRoute>
 				}
 			/>

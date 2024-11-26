@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import JoblyApi from "../../JoblyApi";
 
 /**
  * JobCard component displays individual job details.
@@ -8,24 +9,41 @@ import React from "react";
  *
  * This component is reusable in both the job listing page and the company detail page.
  */
-function JobCard({ job }) {
+function JobCard({
+	id,
+	title,
+	salary,
+	companyName,
+	applied,
+	username,
+}) {
+	const [hasApplied, setHasApplied] = useState(applied);
+
+	const handleApply = async () => {
+		console.log("Current user:", username);
+
+		if (!username) {
+			console.error("Cannot apply: username is missing.");
+			return;
+		}
+
+		if (hasApplied) return; // Prevent multiple applications
+
+		try {
+			await JoblyApi.applyToJob(username, id);
+			setHasApplied(true); // Update state to reflect the application
+		} catch (err) {
+			console.error("Error applying to job:", err);
+		}
+	};
 	return (
 		<div className='job-card'>
-			<h3>{job.title}</h3> {/* Display job title */}
-			<p>{job.companyName}</p>{" "}
-			{/* Display the company name */}
-			<p>
-				Salary:{" "}
-				{job.salary ? `$${job.salary}` : "Not specified"}
-			</p>{" "}
-			{/* Display job salary if available */}
-			<p>
-				Equity:{" "}
-				{job.equity ? `${job.equity}%` : "Not specified"}
-			</p>{" "}
-			{/* Display equity percentage if available */}
-			<p>{job.description}</p>{" "}
-			{/* Display job description */}
+			<h3>{title}</h3>
+			<p>Company: {companyName}</p>
+			<p>Salary: {salary ? `$${salary}` : "N/A"}</p>
+			<button onClick={handleApply} disabled={hasApplied}>
+				{hasApplied ? "Applied" : "Apply"}
+			</button>
 		</div>
 	);
 }

@@ -1,38 +1,18 @@
-/**
- * JobsList Component
- *
- * This component displays a list of jobs fetched from the Jobly API.
- * It includes a search form that allows users to filter jobs by title.
- * The component is responsible for fetching job data, handling search input,
- * and rendering individual job cards.
- *
- * Features:
- * - Displays a search form to filter jobs.
- * - Fetches all jobs from the Jobly API on initial load.
- * - Filters jobs based on the search term provided by the user.
- * - Renders a loading message while the jobs are being fetched.
- * - Renders a list of job cards or a "No jobs found" message.
- *
- * Usage:
- * Simply include <JobsList /> in your component tree to display the list of jobs.
- */
-
 import React, { useState, useEffect } from "react";
 import JoblyApi from "../../JoblyApi";
 import JobCard from "./JobCard";
-
 /**
- * JobsList
+ * JobsList Component
+ * Displays a list of jobs available for application.
  *
- * This component manages the state for the list of jobs, the search term,
- * and the loading state. It handles the fetching of jobs from the Jobly API
- * and updates the displayed list of jobs based on the search term entered by
- * the user.
- *
- * @returns {JSX.Element} The JSX representation of the jobs list, search form,
- *                        and loading state.
+ * @param {object} props - The component's props.
+ * @param {array} props.jobs - Array of job objects.
+ * @param {string} props.username - Current logged-in user's username.
+ * @param {array} props.appliedJobIds - IDs of jobs the user has already applied to.
+ * @returns {JSX.Element} List of JobCard components.
  */
-function JobsList() {
+
+function JobsList({ username, appliedJobIds }) {
 	const [jobs, setJobs] = useState([]); // State for the list of jobs
 	const [searchTerm, setSearchTerm] = useState(""); // State for the search input
 	const [isLoading, setIsLoading] = useState(true); // State for loading status
@@ -99,7 +79,16 @@ function JobsList() {
 			{/* Render the list of jobs or a message if no jobs are found */}
 			{jobs.length ? (
 				jobs.map((job) => (
-					<JobCard key={job.id} job={job} /> // Render each job as a JobCard
+					<JobCard
+						key={job.id}
+						job={job}
+						id={job.id}
+						title={job.title}
+						salary={job.salary}
+						companyName={job.companyName}
+						applied={appliedJobIds.includes(job.id)}
+						username={username}
+					/> // Render each job as a JobCard
 				))
 			) : (
 				<p>No jobs found.</p> // Display message if no jobs match the search

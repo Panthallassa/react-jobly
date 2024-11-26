@@ -1,4 +1,5 @@
 import axios from "axios";
+import { decodeJWT } from "./src/utils/jwtUtils";
 
 const BASE_URL =
 	(typeof import.meta !== "undefined" &&
@@ -30,11 +31,13 @@ class JoblyApi {
 		method = "get"
 	) {
 		console.debug("API Call:", endpoint, data, method);
+		console.debug("Current token:", JoblyApi.token);
 
 		const url = `${BASE_URL}/${endpoint}`;
-		const headers = {
-			Authorization: `Bearer ${JoblyApi.token}`,
-		};
+		const headers = JoblyApi.token
+			? { Authorization: `Bearer ${JoblyApi.token}` }
+			: {};
+
 		const params = method === "get" ? data : {};
 
 		try {
@@ -88,7 +91,12 @@ class JoblyApi {
 	}
 
 	/** Get details of the current user (from token). */
-	static async getCurrentUser(username) {
+	static async getCurrentUser() {
+		if (!this.token)
+			throw new Error(
+				"No token available for authentication."
+			);
+		const { username } = decodeJWT(this.token);
 		const res = await this.request(`api/users/${username}`);
 		return res.user;
 	}
@@ -105,37 +113,45 @@ class JoblyApi {
 
 	/** Log in an existing user. */
 	static async login(data) {
+		console.log("Login data:", data);
 		const res = await this.request(
 			"api/auth/token",
 			data,
 			"post"
 		);
+		console.log("Token received from API:", res.token);
 		return res.token;
 	}
 
 	/** Save user profile updates. */
 	static async saveProfile(username, data) {
-		const res = await this.request(
-			`api/users/${username}`,
-			data,
-			"patch"
-		);
-		return res.user;
+		try {
+			const res = await this.request(
+				`api/users/${username}`,
+				data,
+				"patch"
+			);
+			return res.user;
+		} catch (err) {
+			console.error("API Error updating profile", err);
+		}
 	}
 
 	/** Apply to a job. */
 	static async applyToJob(username, jobId) {
-		await this.request(
-			`api/users/${username}/jobs/${jobId}`,
-			{},
-			"post"
-		);
+		if (!this.token)
+			throw new Error("Unauthorized: No token found.");
+		try {
+			const res = await this.request(
+				`api/users/${username}/jobs/${jobId}`,
+				{},
+				"post"
+			);
+			return res.applied;
+		} catch (err) {
+			console.error("Error applying to job:", err);
+		}
 	}
 }
-
-// For now, use the test user's token
-JoblyApi.token =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
-	"FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
 
 export default JoblyApi;

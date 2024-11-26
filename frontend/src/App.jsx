@@ -6,9 +6,9 @@ import {
 import NavBar from "./components/NavBar";
 import AppRoutes from "./Routes";
 import useLocalStorage from "./hooks/useLocalStorage";
-import * as jwtDecode from "jwt-decode";
 import "./App.css";
 import JoblyApi from "../JoblyApi";
+import { decodeJWT } from "./utils/jwtUtils";
 
 /**
  * Main application component that handles the routing, user authentication,
@@ -26,19 +26,27 @@ function App() {
 	);
 	const [currentUser, setCurrentUser] = useState(null);
 
+	// Log the token whenever it changes
+	useEffect(() => {
+		console.log("Token from localStorage:", token);
+	}, [token]);
+
 	// Load user info when app loads or when token changes
 	useEffect(() => {
 		async function loadUserInfo() {
 			if (token) {
 				try {
-					const { username } = jwtDecode.default(token);
+					const { username } = decodeJWT(token);
 					JoblyApi.token = token; // Set token in API helper
 					const user = await JoblyApi.getCurrentUser(
 						username
 					);
-					setCurrentUser(user);
+					setCurrentUser({
+						...user,
+						applications: user.applications || [], // Default to an empty array if not provided
+					});
 				} catch (err) {
-					console.error("Error loading user info", err);
+					console.error("Error loading user info:", err);
 					setCurrentUser(null);
 				}
 			}
@@ -57,9 +65,9 @@ function App() {
 				username,
 				password,
 			});
-			localStorage.setItem("token", token);
+			console.log("Token after login:", token);
+			setToken(token);
 			JoblyApi.token = token;
-
 			const user = await JoblyApi.getUser(username);
 			setCurrentUser(user);
 			navigate("/");
@@ -70,8 +78,12 @@ function App() {
 
 	// Handle user signup
 	async function handleSignup(signupData) {
-		const token = await JoblyApi.signup(signupData);
-		setToken(token);
+		try {
+			const token = await JoblyApi.signup(signupData);
+			setToken(token);
+		} catch (err) {
+			console.error("Error signing up", err);
+		}
 	}
 
 	// Handle user logout
@@ -90,7 +102,22 @@ function App() {
 			setCurrentUser(updatedUser);
 		} catch (err) {
 			console.error("Error updating profile:", err);
-			throw err;
+		}
+	}
+
+	// Handle job application
+	async function handleJobApplication(jobId) {
+		try {
+			await JoblyApi.applyToJob(
+				currentUser.username,
+				jobId
+			);
+			setCurrentUser((user) => ({
+				...user,
+				applications: [...user.applications, jobId], // Add the job ID to applications
+			}));
+		} catch (err) {
+			console.error("Error applying to job:", err);
 		}
 	}
 
@@ -100,11 +127,13 @@ function App() {
 				logout={handleLogout}
 				currentUser={currentUser}
 			/>
+
 			<AppRoutes
 				handleLogin={handleLogin}
 				handleSignup={handleSignup}
 				currentUser={currentUser}
 				updateUser={updateUser}
+				handleJobApplication={handleJobApplication}
 			/>
 		</BrowserRouter>
 	);
