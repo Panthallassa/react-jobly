@@ -1,15 +1,12 @@
-"use strict";
-
-const db = require("../db");
-const bcrypt = require("bcrypt");
-const { sqlForPartialUpdate } = require("../helpers/sql");
-const {
+import db from "../db.js";
+import bcrypt from "bcrypt";
+import { sqlForPartialUpdate } from "../helpers/sql.js";
+import {
 	NotFoundError,
 	BadRequestError,
 	UnauthorizedError,
-} = require("../expressError");
-
-const { BCRYPT_WORK_FACTOR } = require("../config.js");
+} from "../expressError.js";
+import { BCRYPT_WORK_FACTOR } from "../config.js";
 
 /** Related functions for users. */
 
@@ -18,9 +15,8 @@ class User {
 	 *
 	 * Returns { username, first_name, last_name, email, is_admin }
 	 *
-	 * Throws UnauthorizedError is user not found or wrong password.
+	 * Throws UnauthorizedError if user not found or wrong password.
 	 **/
-
 	static async authenticate(username, password) {
 		// try to find the user first
 		const result = await db.query(
@@ -60,7 +56,6 @@ class User {
 	 *
 	 * Throws BadRequestError on duplicates.
 	 **/
-
 	static async register({
 		username,
 		password,
@@ -116,7 +111,6 @@ class User {
 	 *
 	 * Returns [{ username, first_name, last_name, email, is_admin }, ...]
 	 **/
-
 	static async findAll() {
 		const result = await db.query(
 			`SELECT username,
@@ -138,7 +132,6 @@ class User {
 	 *
 	 * Throws NotFoundError if user not found.
 	 **/
-
 	static async get(username) {
 		const userRes = await db.query(
 			`SELECT username,
@@ -185,7 +178,6 @@ class User {
 	 * Callers of this function must be certain they have validated inputs to this
 	 * or a serious security risks are opened.
 	 */
-
 	static async update(username, data) {
 		if (data.password) {
 			data.password = await bcrypt.hash(
@@ -223,7 +215,6 @@ class User {
 	}
 
 	/** Delete given user from database; returns undefined. */
-
 	static async remove(username) {
 		let result = await db.query(
 			`DELETE
@@ -243,7 +234,6 @@ class User {
 	 * - username: username applying for job
 	 * - jobId: job id
 	 **/
-
 	static async applyToJob(username, jobId) {
 		const preCheck = await db.query(
 			`SELECT id
@@ -274,4 +264,4 @@ class User {
 	}
 }
 
-module.exports = User;
+export default User;

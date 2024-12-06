@@ -1,10 +1,6 @@
-"use strict";
-
-/** Convenience middleware to handle common auth cases in routes. */
-
-const jwt = require("jsonwebtoken");
-const { SECRET_KEY } = require("../config");
-const { UnauthorizedError } = require("../expressError");
+import jwt from "jsonwebtoken";
+import { SECRET_KEY } from "../config.js";
+import { UnauthorizedError } from "../expressError.js";
 
 /** Middleware: Authenticate user.
  *
@@ -46,7 +42,7 @@ function ensureLoggedIn(req, res, next) {
 	}
 }
 
-/** Middleware to use when they be logged in as an admin user.
+/** Middleware to use when they must be logged in as an admin user.
  *
  *  If not, raises Unauthorized.
  */
@@ -86,7 +82,7 @@ function ensureCorrectUserOrAdmin(req, res, next) {
 	}
 }
 
-module.exports = {
+export {
 	authenticateJWT,
 	ensureLoggedIn,
 	ensureAdmin,

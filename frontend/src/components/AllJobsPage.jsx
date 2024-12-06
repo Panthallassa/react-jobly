@@ -12,13 +12,14 @@ function AllJobsPage() {
 	const [jobs, setJobs] = useState([]); // State to store the list of jobs
 	const [searchTerm, setSearchTerm] = useState(""); // State to store the search term
 
+	// useEffect hook to fetch jobs data from backend API
 	useEffect(() => {
 		// Build the API endpoint conditionally
 		const url = `/api/jobs${
 			searchTerm ? `?search=${searchTerm}` : ""
 		}`;
+		console.log("Fetching jobs from: ", url);
 
-		// Fetch jobs from the backend when the searchTerm changes
 		fetch(url)
 			.then((response) => {
 				if (!response.ok) {
@@ -28,9 +29,10 @@ function AllJobsPage() {
 				}
 				return response.json();
 			})
-			.then((data) =>
-				setJobs(Array.isArray(data) ? data : [])
-			) // Ensure jobs is always an array
+			.then((data) => {
+				console.log("Fetched jobs data: ", data);
+				setJobs(Array.isArray(data) ? data : []);
+			})
 			.catch((err) => {
 				console.error("Error fetching jobs:", err);
 				setJobs([]);

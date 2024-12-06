@@ -24,6 +24,7 @@ function LoginForm({ login }) {
 				onChange={handleChange}
 				placeholder='Username'
 				required
+				autoComplete='current-username'
 			/>
 			<input
 				name='password'

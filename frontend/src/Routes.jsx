@@ -82,7 +82,7 @@ function AppRoutes({
 				element={
 					<PrivateRoute currentUser={currentUser}>
 						<JobsList
-							currentUser={currentUser?.username}
+							username={currentUser?.username}
 							handleJobApplication={handleJobApplication}
 							appliedJobIds={
 								currentUser?.applications || []

@@ -1,10 +1,6 @@
 import axios from "axios";
 import { decodeJWT } from "./src/utils/jwtUtils";
-
-const BASE_URL =
-	(typeof import.meta !== "undefined" &&
-		import.meta.env.VITE_BASE_URL) ||
-	"http://localhost:3001";
+import BASE_URL from "./src/config";
 
 /** API Class.
  *
@@ -30,9 +26,6 @@ class JoblyApi {
 		data = {},
 		method = "get"
 	) {
-		console.debug("API Call:", endpoint, data, method);
-		console.debug("Current token:", JoblyApi.token);
-
 		const url = `${BASE_URL}/${endpoint}`;
 		const headers = JoblyApi.token
 			? { Authorization: `Bearer ${JoblyApi.token}` }
@@ -84,6 +77,17 @@ class JoblyApi {
 		return res.jobs;
 	}
 
+	/** Get a job */
+	static async getJob(id) {
+		try {
+			const res = await axios.get(`api/jobs/${id}`);
+			return res.data.job; // Assuming API returns a job object
+		} catch (err) {
+			console.error("Error fetching job:", err);
+			throw err; // Re-throw to handle errors in the calling code
+		}
+	}
+
 	/** Get details on a user by username. */
 	static async getUser(username) {
 		const res = await this.request(`api/users/${username}`);
@@ -113,13 +117,11 @@ class JoblyApi {
 
 	/** Log in an existing user. */
 	static async login(data) {
-		console.log("Login data:", data);
 		const res = await this.request(
 			"api/auth/token",
 			data,
 			"post"
 		);
-		console.log("Token received from API:", res.token);
 		return res.token;
 	}
 

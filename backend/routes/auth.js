@@ -1,16 +1,12 @@
-"use strict";
+import jsonschema from "jsonschema";
+import express from "express";
+import User from "../models/user.js";
+import { createToken } from "../helpers/tokens.js";
+import userAuthSchema from "../schemas/userAuth.json" assert { type: "json" };
+import userRegisterSchema from "../schemas/userRegister.json" assert { type: "json" };
+import { BadRequestError } from "../expressError.js";
 
-/** Routes for authentication. */
-
-const jsonschema = require("jsonschema");
-
-const User = require("../models/user");
-const express = require("express");
-const router = new express.Router();
-const { createToken } = require("../helpers/tokens");
-const userAuthSchema = require("../schemas/userAuth.json");
-const userRegisterSchema = require("../schemas/userRegister.json");
-const { BadRequestError } = require("../expressError");
+const router = express.Router();
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -18,24 +14,28 @@ const { BadRequestError } = require("../expressError");
  *
  * Authorization required: none
  */
-
 router.post("/token", async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, userAuthSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+	try {
+		const validator = jsonschema.validate(
+			req.body,
+			userAuthSchema
+		);
+		if (!validator.valid) {
+			const errs = validator.errors.map((e) => e.stack);
+			throw new BadRequestError(errs);
+		}
 
-    const { username, password } = req.body;
-    const user = await User.authenticate(username, password);
-    const token = createToken(user);
-    return res.json({ token });
-  } catch (err) {
-    return next(err);
-  }
+		const { username, password } = req.body;
+		const user = await User.authenticate(
+			username,
+			password
+		);
+		const token = createToken(user);
+		return res.json({ token });
+	} catch (err) {
+		return next(err);
+	}
 });
-
 
 /** POST /auth/register:   { user } => { token }
  *
@@ -45,22 +45,26 @@ router.post("/token", async function (req, res, next) {
  *
  * Authorization required: none
  */
-
 router.post("/register", async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, userRegisterSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+	try {
+		const validator = jsonschema.validate(
+			req.body,
+			userRegisterSchema
+		);
+		if (!validator.valid) {
+			const errs = validator.errors.map((e) => e.stack);
+			throw new BadRequestError(errs);
+		}
 
-    const newUser = await User.register({ ...req.body, isAdmin: false });
-    const token = createToken(newUser);
-    return res.status(201).json({ token });
-  } catch (err) {
-    return next(err);
-  }
+		const newUser = await User.register({
+			...req.body,
+			isAdmin: false,
+		});
+		const token = createToken(newUser);
+		return res.status(201).json({ token });
+	} catch (err) {
+		return next(err);
+	}
 });
 
-
-module.exports = router;
+export default router;

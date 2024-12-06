@@ -15,8 +15,11 @@ function Login({ handleLogin }) {
 	const navigate = useNavigate(); // Initialize the navigate hook
 
 	const loginAction = async (formData) => {
-		await handleLogin(formData, navigate); // Use the login function passed as a prop
-		navigate("/"); // Redirect after successful login
+		try {
+			await handleLogin(formData, navigate);
+		} catch (err) {
+			console.error("Error in loginAction:", err);
+		}
 	};
 
 	return (

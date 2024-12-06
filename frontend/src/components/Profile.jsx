@@ -54,6 +54,7 @@ function Profile({ currentUser, updateUser }) {
 					value={formData.username}
 					onChange={handleChange}
 					disabled
+					autoComplete='current-username'
 				/>
 
 				<label htmlFor='firstName'>First Name:</label>
@@ -93,6 +94,7 @@ function Profile({ currentUser, updateUser }) {
 					onChange={handleChange}
 					placeholder='Enter password to confirm changes'
 					required
+					autoComplete='current-password'
 				/>
 
 				<button type='submit'>Save Changes</button>

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-	BrowserRouter,
-	useNavigate,
-} from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import AppRoutes from "./Routes";
 import useLocalStorage from "./hooks/useLocalStorage";
@@ -25,11 +22,6 @@ function App() {
 		TOKEN_STORAGE_KEY
 	);
 	const [currentUser, setCurrentUser] = useState(null);
-
-	// Log the token whenever it changes
-	useEffect(() => {
-		console.log("Token from localStorage:", token);
-	}, [token]);
 
 	// Load user info when app loads or when token changes
 	useEffect(() => {
@@ -55,12 +47,9 @@ function App() {
 	}, [token]);
 
 	// Handle user login
-	async function handleLogin({
-		username,
-		password,
-		navigate,
-	}) {
+	async function handleLogin(formData, navigate) {
 		try {
+			const { username, password } = formData;
 			const token = await JoblyApi.login({
 				username,
 				password,
@@ -122,7 +111,12 @@ function App() {
 	}
 
 	return (
-		<BrowserRouter>
+		<BrowserRouter
+			future={{
+				v7_startTransition: true,
+				v7_relativeSplatPath: true,
+			}}
+		>
 			<NavBar
 				logout={handleLogout}
 				currentUser={currentUser}

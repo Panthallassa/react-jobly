@@ -27,6 +27,7 @@ function SignupForm({ signup }) {
 				onChange={handleChange}
 				placeholder='Username'
 				required
+				autoComplete='new-username'
 			/>
 			<input
 				name='password'
@@ -35,6 +36,7 @@ function SignupForm({ signup }) {
 				onChange={handleChange}
 				placeholder='Password'
 				required
+				autoComplete='new-password'
 			/>
 			<input
 				name='firstName'

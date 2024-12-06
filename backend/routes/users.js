@@ -1,19 +1,14 @@
-"use strict";
-
-/** Routes for users. */
-
-const jsonschema = require("jsonschema");
-
-const express = require("express");
-const {
+import jsonschema from "jsonschema";
+import express from "express";
+import {
 	ensureCorrectUserOrAdmin,
 	ensureAdmin,
-} = require("../middleware/auth");
-const { BadRequestError } = require("../expressError");
-const User = require("../models/user");
-const { createToken } = require("../helpers/tokens");
-const userNewSchema = require("../schemas/userNew.json");
-const userUpdateSchema = require("../schemas/userUpdate.json");
+} from "../middleware/auth.js";
+import { BadRequestError } from "../expressError.js";
+import User from "../models/user.js";
+import { createToken } from "../helpers/tokens.js";
+import userNewSchema from "../schemas/userNew.json" assert { type: "json" };
+import userUpdateSchema from "../schemas/userUpdate.json" assert { type: "json" };
 
 const router = express.Router();
 
@@ -28,7 +23,6 @@ const router = express.Router();
  *
  * Authorization required: admin
  **/
-
 router.post(
 	"/",
 	ensureAdmin,
@@ -84,7 +78,6 @@ router.post(
  *
  * Authorization required: admin
  **/
-
 router.get(
 	"/",
 	ensureAdmin,
@@ -105,7 +98,6 @@ router.get(
  *
  * Authorization required: admin or same user-as-:username
  **/
-
 router.get(
 	"/:username",
 	ensureCorrectUserOrAdmin,
@@ -128,7 +120,6 @@ router.get(
  *
  * Authorization required: admin or same-user-as-:username
  **/
-
 router.patch(
 	"/:username",
 	ensureCorrectUserOrAdmin,
@@ -158,7 +149,6 @@ router.patch(
  *
  * Authorization required: admin or same-user-as-:username
  **/
-
 router.delete(
 	"/:username",
 	ensureCorrectUserOrAdmin,
@@ -178,7 +168,6 @@ router.delete(
  *
  * Authorization required: admin or same-user-as-:username
  * */
-
 router.post(
 	"/:username/jobs/:id",
 	ensureCorrectUserOrAdmin,
@@ -193,4 +182,4 @@ router.post(
 	}
 );
 
-module.exports = router;
+export default router;

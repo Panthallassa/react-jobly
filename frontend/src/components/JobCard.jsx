@@ -16,6 +16,7 @@ function JobCard({
 	companyName,
 	applied,
 	username,
+	hideCompanyName = false, // Hide company name if JobCard is rendered with the CompanyDetail component
 }) {
 	const [hasApplied, setHasApplied] = useState(applied);
 
@@ -39,7 +40,7 @@ function JobCard({
 	return (
 		<div className='job-card'>
 			<h3>{title}</h3>
-			<p>Company: {companyName}</p>
+			{!hideCompanyName && <p>Company: {companyName}</p>}
 			<p>Salary: {salary ? `$${salary}` : "N/A"}</p>
 			<button onClick={handleApply} disabled={hasApplied}>
 				{hasApplied ? "Applied" : "Apply"}

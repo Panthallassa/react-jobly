@@ -1,19 +1,13 @@
-"use strict";
-
-/** Express app for jobly. */
-
-const express = require("express");
-const cors = require("cors");
-
-const { NotFoundError } = require("./expressError");
-
-const { authenticateJWT } = require("./middleware/auth");
-const authRoutes = require("./routes/auth");
-const companiesRoutes = require("./routes/companies");
-const usersRoutes = require("./routes/users");
-const jobsRoutes = require("./routes/jobs");
-
-const morgan = require("morgan");
+import express from "express";
+import cors from "cors";
+import { NotFoundError } from "./expressError.js";
+import { authenticateJWT } from "./middleware/auth.js";
+import authRoutes from "./routes/auth.js";
+import companiesRoutes from "./routes/companies.js";
+import usersRoutes from "./routes/users.js";
+import jobsRoutes from "./routes/jobs.js";
+import testRoutes from "./routes/testRoutes.js";
+import morgan from "morgan";
 
 const app = express();
 
@@ -45,4 +39,9 @@ app.use(function (err, req, res, next) {
 	});
 });
 
-module.exports = app;
+// Test-related routes (only enable in test environment)
+if (process.env.NODE_ENV === "test") {
+	app.use("/api/test", testRoutes);
+}
+
+export default app;
