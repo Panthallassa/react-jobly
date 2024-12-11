@@ -13,6 +13,7 @@ router.post("/reset-database", async (req, res) => {
 		await db.query("DELETE FROM applications;");
 		await db.query("DELETE FROM jobs;");
 		await db.query("DELETE FROM companies;");
+		await db.query("DELETE FROM users;");
 
 		// Seed test data for companies
 		await db.query(`
@@ -26,6 +27,14 @@ router.post("/reset-database", async (req, res) => {
       INSERT INTO jobs (id, title, salary, equity, company_handle)
       VALUES (1, 'Software Engineer', 120000, '0.05', 'apple'),
              (2, 'Data Scientist', 110000, '0.1', 'google');
+    `);
+
+		// Seed test data for users
+		await db.query(`
+      INSERT INTO users (username, password, first_name, last_name, email, is_admin)
+      VALUES 
+        ('testuser', 'hashedpassword', 'Test', 'User', 'testuser@example.com', false),
+        ('adminuser', 'hashedpassword', 'Admin', 'User', 'admin@example.com', true);
     `);
 
 		// Seed test data for applications

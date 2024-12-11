@@ -24,7 +24,11 @@ export function renderWithRouter(
 ) {
 	window.history.pushState({}, "Test page", route);
 
-	return render(ui, { wrapper: BrowserRouter, ...options });
+	// Only wrap with BrowserRouter if the component isn't already wrapped
+	const Wrapper =
+		ui.type.name === "App" ? React.Fragment : BrowserRouter;
+
+	return render(ui, { wrapper: Wrapper });
 }
 
 /**

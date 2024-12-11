@@ -11,6 +11,7 @@ import JobsList from "./JobsList";
 function AllJobsPage() {
 	const [jobs, setJobs] = useState([]); // State to store the list of jobs
 	const [searchTerm, setSearchTerm] = useState(""); // State to store the search term
+	const [error, setError] = useState(false); // State to track fetch errors
 
 	// useEffect hook to fetch jobs data from backend API
 	useEffect(() => {
@@ -18,7 +19,6 @@ function AllJobsPage() {
 		const url = `/api/jobs${
 			searchTerm ? `?search=${searchTerm}` : ""
 		}`;
-		console.log("Fetching jobs from: ", url);
 
 		fetch(url)
 			.then((response) => {
@@ -30,12 +30,13 @@ function AllJobsPage() {
 				return response.json();
 			})
 			.then((data) => {
-				console.log("Fetched jobs data: ", data);
 				setJobs(Array.isArray(data) ? data : []);
+				setError(false); // Reset error state on successful fetch
 			})
 			.catch((err) => {
 				console.error("Error fetching jobs:", err);
 				setJobs([]);
+				setError(true); // Set error state on fetch failure
 			});
 	}, [searchTerm]); // Effect will run whenever searchTerm changes
 
@@ -47,8 +48,13 @@ function AllJobsPage() {
 				value={searchTerm} // Bind the value of the input to the searchTerm state
 				onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm state on input change
 			/>
-			<JobsList jobs={jobs} />{" "}
-			{/* Render the list of jobs */}
+			{error ? (
+				<p>Error fetching jobs. Please try again later.</p> // Display error message on fetch failure
+			) : jobs.length === 0 ? (
+				<p>No jobs found.</p> // Display fallback message if jobs list is empty
+			) : (
+				<JobsList jobs={jobs} /> // Render the list of jobs
+			)}
 		</div>
 	);
 }

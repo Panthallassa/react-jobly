@@ -22,7 +22,12 @@ function NavBar({ currentUser, logout }) {
 					<Link to='/jobs'>Jobs</Link> {/* Link to Jobs */}
 					<Link to='/profile'>Profile</Link>{" "}
 					{/* Profile link */}
-					<button onClick={logout}>Logout</button>{" "}
+					<button
+						data-testid='logout-button'
+						onClick={logout}
+					>
+						Logout
+					</button>{" "}
 					{/* Logout button */}
 				</>
 			) : (
